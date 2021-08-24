@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" href="https://i.imgur.com/ZfgJjwV.png" type="image/icon type">
+<title>RTinFew Blogs | Blog security</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="RTinFew Blogs" />
+<meta name="author" content="Lê Nguyễn Tiến Vinh" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Blog security" />
+<meta property="og:description" content="Blog security" />
+<link rel="canonical" href="https://rtinfew.github.io" />
+<meta property="og:url" content="https://rtinfew.github.io" />
+<meta property="og:site_name" content="RTinFew Blogs" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="RTinFew Blogs" />
+<meta name="twitter:site" content="@Lê Nguyễn Tiến Vinh" />
+<meta name="twitter:creator" content="@Lê Nguyễn Tiến Vinh" />
+<meta name="google-site-verification" content="u4WXQl0Eu66rsQo2kRdCNx" />
+<script type="application/ld+json">
+{"sameAs":["https://twitter.com/","https://www.facebook.com/lenguyen.tienvinh","https://github.com/RTinFew"],"description":"Blog security","url":"https://rtinfew.github.io/CTF","@type":"WebSite","author":{"@type":"Person","name":"Lê Nguyễn Tiến Vinh"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":""},"name":"Lê Nguyễn Tiến Vinh"},"name":"Lê Nguyễn Tiến Vinh","headline":"RTinFew Blogs","@context":"https://schema.org"}</script>
+
+
+
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open%20Sans|Roboto|Roboto%20Slab|Inconsolata|Dancing%20Script|Noto%20Sans%20SC|Noto%20Sans%20TC|Noto%20Serif%20SC|Noto%20Serif%20TC|Ma%20Shan%20Zheng">
+
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/skin.css">
+
+
+<script async src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+
+
+
+
+  </head>
+
+  <body>
+    <div class="site-container">
+      <header class="site-header">
+        <div class="wrapper">
+  <script>
+    function clickSidebarButton() {
+      const elem = document.getElementById("site-sidebar")
+      if (elem.style.display == "none" || elem.style.display == "") {
+        elem.style.display = "block";
+      } else {
+        elem.style.display = "none";
+      }
+    }
+  </script>
+  <a class="site-sidebar-button" onclick="clickSidebarButton()"><i class="far fa-user"></i>
+  </a>
+
+  <a class="site-title" rel="author" href="/CTF">RTinFew Blogs</a>
+
+  
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger" title="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <ul class="trigger">
+              <li><a class="" href="/CTF/categories">Categories</a></li>
+            </ul>
+    </nav>
+  
+</div>
+
+      </header>
+      
+      <div class="site-body wrapper">
+        <aside class="site-sidebar" id="site-sidebar">
+          
+            <div class="sidebar-section"><img src="https://i.imgur.com/ZfgJjwV.png" class="author-avatar u-photo align-center" alt="Lê Nguyễn Tiến Vinh">
+  </div>
+
+<div class="sidebar-section">
+  <ul class="contact-list">
+    <li>
+        <i class="sidebar-icon fas fa-at"></i>
+        <span class="contact-info p-name">Lê Nguyễn Tiến Vinh</span>
+      </li>
+    <li>
+        <i class="sidebar-icon fas fa-envelope"></i>
+        <a class="contact-info u-email" href="mailto:kalirtinfew@gmail.com">kalirtinfew@gmail.com</a>
+      </li>
+    <li>
+        <i class="sidebar-icon fas fa-location-arrow"></i>
+        <a class="contact-info u-location" href="https://www.google.com/maps/search/Kien Giang - Viet Nam">Kien Giang - Viet Nam</a>
+      </li>
+  </ul>
+</div>
+
+<div class="sidebar-section feed-subscribe">
+  <a href="https://www.youtube.com">
+    <i class="sidebar-icon fas fa-rss"></i><span>Subscribe</span>
+  </a>
+</div>
+
+<div class="sidebar-section">
+    <ul class="social-icons">
+      <li>
+          <a class="social-icon" href="https://www.facebook.com/lenguyen.tienvinh"><i class="fab fa-facebook-f fa-2x" title="Facebook"></i></a>
+        </li><li>
+          <a class="social-icon" href="https://twitter.com/"><i class="fab fa-twitter fa-2x" title="Twitter"></i></a>
+        </li><li>
+          <a class="social-icon" href="https://github.com/RTinFew"><i class="fab fa-github fa-2x" title="GitHub"></i></a>
+        </li><li>
+          <a class="social-icon" href="https://t.me/"><i class="fab fa-telegram fa-2x" title="Telegram"></i></a>
+        </li><li>
+          <a class="social-icon" href="https://www.linkedin.com/"><i class="fab fa-linkedin fa-2x" title="Linkedin"></i></a>
+        </li>
+    </ul>
+  </div>
+
+          
+        </aside>
+        <main class="site-main" id="site-main" aria-label="Content" tabindex="1">
+          <div class="home">
+
+  
+
+  <ul class="post-list"><li>
+        <h2>
+          <a href="/CTF/pwn">
+            [WRITEUP REDPWN CTF 2021]: WEB
+          </a>
+        </h2>
+        <p class="post-meta">
+          <time class="dt-published" datetime="2021-08-16T00:00:00+00:00" itemprop="datePublished">
+            Aug 16, 2021
+          </time></p><div class="post-excerpt" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp: 3; -webkit-box-orient: vertical; display: -webkit-box;">Dưới đây là một số challenge mà mình giải quyết được và ở CTF lần này mình cũng chỉ giải được 8/13, có lẽ do kiến thức mình vẫn đang còn yếu nên các bài sau mình chưa có thể giải quyết được. Mong các bạn đọc tham khảo và đừng ném đá nhé :(
+
+</div></li><li>
+        <h2>
+          <a href="/CTF/wg">
+            [WRITEUP WARGAME WHITEHAT 2021]: WEB
+          </a>
+        </h2>
+        <p class="post-meta">
+          <time class="dt-published" datetime="2021-07-13T00:00:00+00:00" itemprop="datePublished">
+            Jul 13, 2021
+          </time></p><div class="post-excerpt" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp: 3; -webkit-box-orient: vertical; display: -webkit-box;">Phần này sẽ là phần write up một số bài sắp tới trên wargame ra mắt, sẽ được update sau 7 ngày khi wargame whitehat ra nhé!
+</div></li><li>
+
+    
+      <div class="pager">
+        <ul class="pagination">
+          <li><div class="pager-edge">•</div></li>
+          <li><div class="current-page">1</div></li>
+          <li><div class="pager-edge">•</div></li>
+        </ul>
+      </div></div>
+
+          <footer class="site-footer">
+            <div class="footer-col-wrapper">
+
+  <div class="footer-col">
+    <div class="copyright">
+      
+      
+      
+      
+      <p>Copyright © 2021 Lê Nguyễn Tiến Vinh; All rights reserved.</p>
+    </div>
+  </div>
+      
+  <div class="footer-col">
+    <p>Blog security</p>
+  </div>
+</div>
+
+          </footer>
+        </main>
+      </div>
+    </div>
+  </body>
+
+</html>

